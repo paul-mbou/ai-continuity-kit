@@ -1,0 +1,103 @@
+---
+description: >-
+  Palette-agnostic layout & interface craft (shell, cards, gutters, funnels).
+  Apply when building or redesigning Flutter/mobile UI screens. Use the project's
+  own color tokens — do not invent a palette.
+alwaysApply: true
+---
+
+# Interface layout & craft (palette-agnostic)
+
+Replicate **structure, density, and interaction patterns** of a premium lifestyle/social mobile shell — not a generic SaaS dashboard.
+
+**Colors:** use only the project's existing theme tokens (`Theme.of(context).colorScheme`, `scaffoldBackgroundColor`, local `AppColors` / `AppTheme`). Do **not** invent hex values or copy another app's palette unless the user supplies them.
+
+## North star
+
+- One clear job per screen. Calm, warm-premium, content-forward.
+- Prefer existing shared widgets and screen recipes over new visual languages.
+- Anti-slop: no pill-stat hero strips, no emoji decoration, no dashboard clutter on first viewport of a focused flow, no generic “AI SaaS” chrome.
+
+## Theme roles (not hues)
+
+| Role | Use for |
+|------|---------|
+| `scaffoldBackgroundColor` | Page canvas |
+| `colorScheme.surface` | Cards, sheets, elevated panels |
+| `onSurface` | Primary text & icons |
+| `onSurfaceVariant` | Secondary labels, hints, section titles |
+| `outline` / `outlineVariant` | Card borders, dividers, inputs |
+| `surfaceContainer*` | Soft fills, chips, banners |
+| `primary` / `onPrimary` | CTAs, FAB, selected chips, badges, accent rings |
+| Navigation chrome | Theme navigationBar / surface containers |
+
+- Light AND Dark must both work. No hardcoded white/black body text that breaks a theme.
+- Inputs: visible outline; fill = scaffold or soft container.
+- Media overlays: readable scrim; fade into scaffold when needed.
+- Status bar icons must stay visible in each theme.
+- One accent only (`primary`) for CTAs / selection / FAB — do not invent a second accent.
+
+## Typography
+
+- One UI font from the project theme (`textTheme`). Do not add Inter/Roboto/system defaults if a brand font exists.
+- Titles: weight `w600`–`w800`. Section headers often `titleSmall` + `onSurfaceVariant`.
+- Short human copy. Empty states = muted icon + one line + one CTA.
+
+## Icons
+
+- Lucide-style outline icons only (`lucide_icons_flutter` or project equivalent).
+- Common: heart, messageCircle, share2, bookmark, search, bell, plus, sparkles.
+
+## Spacing
+
+- Gaps: `flutter_gutter` only (`GutterTiny` … `GutterExtraLarge`, `Gutter.custom`).
+- Never `SizedBox` for spacing. `SizedBox` only for non-spacing size constraints.
+- Horizontal page padding: consistent gutter (e.g. `context.gutter`).
+
+## Surfaces & cards
+
+- Fill: `surface`. Radius ~14–18. Subtle `outline` border (~0.7 alpha). Prefer border over heavy shadows.
+- Settings: external section label + grouped list tiles + chevrons.
+- Section cards: title (`onSurfaceVariant`) + control + footer caption.
+
+## App shell
+
+- Bottom nav: floating stadium pill (blur + soft shadow), sliding selection indicator, outline→filled icons with light scale/fade.
+- Profile is **not** a tab — open from shell avatar.
+- Shared app bar: avatar | contextual search | notifications (unread badge uses `primary`).
+- Circular FAB only on create-capable tabs; pad scroll bottom (~100) on those tabs.
+- Full-screen detail/create flows use the root navigator (above the shell).
+- Guest browse of discovery tabs is fine; gate create / account / messaging when required.
+
+## Screen patterns
+
+**Lists / discovery** — search + filter chips + card list or masonry; optional single contextual banner (not a stats strip).
+
+**Feed / social** — author → media → caption → engagement. Engagement absorbs taps; media/caption open detail. Detail: frosted/collapsing app bar; keyboard-safe composer (`resizeToAvoidBottomInset`).
+
+**Create funnels** — clear steps; app-bar X exits whole funnel (Save draft / Discard / Stay); bottom Back = previous step; pinned stadium primary CTA, keyboard-safe.
+
+**Profile** — header card (avatar with primary ring, identity, optional badge, compact stats) + grouped settings cards.
+
+**Empty** — muted icon + short message + one primary CTA.
+
+**Dialogs / sheets** — surface or glass + outline; `primary` only on the affirming action. Prefer sheets for pickers / “save to…”.
+
+## Motion
+
+Sparse and intentional: fade+slide routes, soft indicator slides on nav/chips. No continuous glow noise.
+
+## Implementation
+
+1. Read theme + shared widgets before inventing new chrome.
+2. Feature folders + consistent router wiring.
+3. Prefer `Theme.of(context)` — no one-off hex in widgets.
+4. Reuse root scroll layout, frosted app bar, cached images/avatars, themed fields.
+5. Document new patterns briefly so the next agent reuses them.
+
+## Do not
+
+- Lock or invent a fixed palette in this rule’s name.
+- Build dashboard-first layouts for single-purpose flows.
+- Mix multiple accents or design languages mid-feature.
+- Use `SizedBox` for spacing gaps.
